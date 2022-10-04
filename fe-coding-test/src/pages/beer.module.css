@@ -1,32 +1,12 @@
-.beerTitle {
-    font-size: 20px;
-    font-family: "Montserrat";
-}
-
 .pageTitle {
     font-size: 24px;
     font-family: "Montserrat";
+    font-weight: bold;
 }
 
-.container { display: grid; grid-template-columns: 1fr; }
-
-@media (min-width: 480px) {
-    .container { grid-template-columns: 1fr 1fr; }
-}
-
-.item img{
-    height: 400px;
-}
-
-.inlineList {
-    list-style: none;
-}
-
-.inlineList .listItem {
-    display: inline;
-    padding: 0 1em;
-}
-
-.inlineList .listItem:not(:last-child) {
-    border-right: 1px solid black;
+@media (min-width: 1024px) {
+    .pageHeading {
+        display: flex;
+        justify-content: space-between;
+    }
 }
