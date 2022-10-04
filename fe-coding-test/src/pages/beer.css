@@ -8,3 +8,15 @@
     font-family: "Montserrat";
 }
 
+.inline-list {
+    list-style: none;
+}
+
+.inline-list .list-item {
+    display: inline;
+    padding: 0 1em;
+}
+
+.inline-list .list-item:not(:last-child) {
+    border-right: 1px solid black;
+}
