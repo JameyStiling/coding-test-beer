@@ -1,53 +1,65 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import styles from "../beer.module.css";
 
-const calcIsMobile = () => {
-  const breakpoint = 480; //set mobile breakpoint at 480px
+const calcScreenType = () => {
+  const breakpointMobile = 480;
+  const breakpointDesktop = 1024;
   const currentWidth = window.innerWidth;
-  return currentWidth < breakpoint;
+  return currentWidth < breakpointMobile
+    ? "mobile"
+    : currentWidth > breakpointDesktop
+    ? "desktop"
+    : "tablet";
 };
 
 function BeerList() {
-  const [isMobile, setIsMobile] = useState(calcIsMobile);
+  const [screenType, setScreenType] = useState(calcScreenType);
   const [beers, getBeers] = useState([]);
+  const [page, setPage] = useState(1);
   const apiUrl = "https://api.punkapi.com/v2/beers";
 
   useEffect(() => {
-    getBeer();
+    getBeer(page);
 
     const handleWindowResize = () => {
-      setIsMobile(calcIsMobile);
+      setScreenType(calcScreenType);
     };
     window.addEventListener("resize", handleWindowResize);
     // removes the event listener
     return () => window.removeEventListener("resize", handleWindowResize);
   }, []);
 
-  const getBeer = () => {
+  const getBeer = (page) => {
     axios
       .get(apiUrl, {
-        params: {},
+        params: { per_page: 20, page },
       })
       .then((response) => {
         const allBeers = response.data;
-        getBeers(allBeers);
+        getBeers([...beers, ...allBeers]);
       })
       .catch((err) => console.log("err", err));
   };
 
+  const handleGetMoreBeer = () => {
+    getBeer(page + 1);
+    setPage(page + 1);
+  };
+
   return (
     <>
-      <div class="container-main">
+      <div className={styles.container}>
         {beers.map((beer) => {
           return (
-            <article className="item">
-              <div className="card-header">{beer.name}</div>
-              <div classname="card-tagline">{beer.tagline}</div>
-              <div className="card-img">
+            <article key={beer.tagline} className={styles.item}>
+              <div className={styles.header}>{beer.name}</div>
+              <div className={styles.tagline}>{beer.tagline}</div>
+              <div className={styles.img}>
                 <img src={beer.image_url} />
               </div>
-              <div className="description">{beer.description}</div>
-              {!isMobile && (
+              <div className={styles.description}>{beer.description}</div>
+              {screenType === "desktop" && (
                 <div>
                   <div>Pair it with: </div>
                   <ul>
@@ -55,17 +67,17 @@ function BeerList() {
                       return <li>{pairing}</li>;
                     })}
                   </ul>
-                  <ul className="inline-list">
-                    <li className="list-item">
-                      <span className="title">ABV: </span>
+                  <ul className={styles.inlineList}>
+                    <li className={styles.listItem}>
+                      <span className={styles.title}>ABV: </span>
                       {beer.abv}
                     </li>
-                    <li className="list-item">
-                      <span className="title">IBU: </span>
+                    <li className={styles.listItem}>
+                      <span className={styles.title}>IBU: </span>
                       {beer.ibu}
                     </li>
-                    <li className="list-item">
-                      <span className="title">PH: </span>
+                    <li className={styles.listItem}>
+                      <span className={styles.title}>PH: </span>
                       {beer.ph}
                     </li>
                   </ul>
@@ -74,6 +86,7 @@ function BeerList() {
             </article>
           );
         })}
+        <button onClick={handleGetMoreBeer}>Load more Beer</button>
       </div>
     </>
   );
